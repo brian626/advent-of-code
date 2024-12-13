@@ -2,19 +2,9 @@
 import { readFileSync } from 'fs';
 import { exit } from 'process';
 
-const file = readFileSync('./19.input', 'utf-8');
+const file = readFileSync('./19.test', 'utf-8');
 
 const lines = file.split('\n');
-
-let numElves = -1;
-
-for (let i = 0; i < lines.length; i++) {
-    if (lines[i].length === 0) { continue; }
-
-    numElves = parseInt(lines[i]);
-}
-
-const allThePresents = numElves;
 
 class Elf {
     name: string;
@@ -26,91 +16,111 @@ class Elf {
     }
 }
 
-const elves: Elf[] = [];
+let numElves = -1;
 
-for (let i = 0; i < numElves; i++) {
-    elves[i] = new Elf((i+1).toString(), 1);
+for (let i = 0; i < lines.length; i++) {
+    if (lines[i].length === 0) { continue; }
+
+    numElves = parseInt(lines[i]);
 }
 
-// steal from elf across, choosing left (from stealer's perspective if there are two)
-// if there are an odd number of elves, there will be two - 1 chooses between floor(n/2)+1 and ceil(n/2)+1
-// if there are an even number of elves, only one choice - 1 chooses (n/2)+1
+for (let e = 5; e < 100; e++) {
+    // console.log(`*** Starting with ${e} elves`);
+    numElves = e;
 
-let done = false;
-let currentElfNum = 0;
+    const allThePresents = e;
 
+    const elves: Elf[] = [];
 
-while (!done) {
-    if (numElves % 100 === 0) { console.log(`${numElves} elves left`); }
-    // console.log(`before steal`);
-    // printElves();
-
-    let currentElf = elves[currentElfNum];
-
-    // console.log(`  currentElfNum === ${currentElfNum}`);
-    // console.log(`  elf ${currentElf.name} deciding who to steal from`);
-
-    if (currentElf.presents === 0) { continue; }
-    if (currentElf.presents === allThePresents) {
-        console.log(currentElf.name);
-        done = true;
-        break;
+    for (let i = 0; i < numElves; i++) {
+        elves[i] = new Elf((i + 1).toString(), 1);
     }
 
-    let elfNumToStealFrom = -1;
-    if (numElves % 2 === 0) {
-        elfNumToStealFrom = (numElves / 2);
-    } else {
-        elfNumToStealFrom = Math.floor(numElves / 2);
-    }
+    // steal from elf across, choosing left (from stealer's perspective if there are two)
+    // if there are an odd number of elves, there will be two - 1 chooses between floor(n/2)+1 and ceil(n/2)+1
+    // if there are an even number of elves, only one choice - 1 chooses (n/2)+1
 
-    if (elfNumToStealFrom >= numElves) {
-        elfNumToStealFrom = elfNumToStealFrom % numElves;
-    }
+    let done = false;
+    let currentElfNum = 0;
 
-    // console.log(`  elf ${currentElf.name} steals from elf that is ${elfNumToStealFrom} places ahead`);
 
-    let elfToStealFrom: Elf = null;
-    let elfPtr = currentElfNum;
-    while (elfNumToStealFrom > 0) {
-        elfPtr++;
-        if (elfPtr >= allThePresents) { elfPtr = 0; }
-        if (elves[elfPtr].presents !== 0) {
-            elfNumToStealFrom--;
+    while (!done) {
+        if (numElves % 100 === 0) { console.log(`${numElves} elves left`); }
+        // console.log(`before steal`);
+        // printElves(elves, currentElfNum);
+
+        let currentElf = elves[currentElfNum];
+
+        // console.log(`  currentElfNum === ${currentElfNum}`);
+        // console.log(`  elf ${currentElf.name} deciding who to steal from`);
+
+        if (currentElf.presents === 0) { continue; }
+        if (currentElf.presents === allThePresents) {
+            console.log(`starting with ${e}, ${currentElf.name} is the winner`);
+            done = true;
+            break;
         }
-    }
-    elfToStealFrom = elves[elfPtr];
 
-    // console.log(`  elf ${currentElf.name} steals from elf ${elfToStealFrom.name}`);
+        let elfNumToStealFrom = -1;
+        if (numElves % 2 === 0) {
+            elfNumToStealFrom = (numElves / 2);
+        } else {
+            elfNumToStealFrom = Math.floor(numElves / 2);
+        }
 
-    currentElf.presents += elfToStealFrom.presents;
-    elfToStealFrom.presents = 0;
+        if (elfNumToStealFrom >= numElves) {
+            elfNumToStealFrom = elfNumToStealFrom % numElves;
+        }
 
-    // console.log(`after steal`);
-    // printElves();
+        // console.log(`  elf ${currentElf.name} steals from elf that is ${elfNumToStealFrom} places ahead`);
 
-    // remove elves without presents
-    numElves--;
+        let elfToStealFrom: Elf = null;
+        let elfPtr = currentElfNum;
+        while (elfNumToStealFrom > 0) {
+            elfPtr++;
+            if (elfPtr >= allThePresents) { elfPtr = 0; }
+            if (elves[elfPtr].presents !== 0) {
+                elfNumToStealFrom--;
+            }
+        }
+        elfToStealFrom = elves[elfPtr];
 
-    // console.log(`after remove`);
-    // printElves();
+        // console.log(`  elf ${currentElf.name} steals from elf ${elfToStealFrom.name}`);
 
-    // console.log(`  incrementing currentElfNum to ${currentElfNum + 1}`);
-    currentElfNum++;
-    while (elves[currentElfNum].presents === 0) {
-        // console.log(`  incrementing currentElfNum to ${currentElfNum + 1}`);
+        currentElf.presents += elfToStealFrom.presents;
+        elfToStealFrom.presents = 0;
+
+        // console.log(`after steal, there are ${numElves} elves`);
+        // printElves(elves, currentElfNum);
+
+        // remove elves without presents
+        numElves--;
+
+        // console.log(`after remove, there are ${numElves} elves left`);
+        // printElves(elves, currentElfNum);
+
+        // console.log(`  incrementing currentElfNum to ${currentElfNum + 1} (allThePresents is ${allThePresents})`);
         currentElfNum++;
         if (currentElfNum >= allThePresents) {
             // console.log(`  resetting currentElfNum to 0`);
             currentElfNum = 0;
         }
-    }
 
-    // console.log();
+        while (elves[currentElfNum].presents === 0) {
+            // console.log(`  re-incrementing currentElfNum to ${currentElfNum + 1} (allThePresents is ${allThePresents})`);
+            currentElfNum++;
+            if (currentElfNum >= allThePresents) {
+                // console.log(`  resetting currentElfNum to 0`);
+                currentElfNum = 0;
+            }
+        }
+
+        // console.log();
+    }
 }
 
 
-function printElves(): void {
+function printElves(elves: Elf[], currentElfNum: number): void {
     let elfPtr = 0;
 
     while (elves[elfPtr]) {

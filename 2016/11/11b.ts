@@ -61,7 +61,7 @@ const initialState = new State();
 // initialState.floors[3] = [];
 
 // Real input
-initialState.floors[0] = ['ThuG', 'ThuM', 'PluG', 'StrG'];
+initialState.floors[0] = ['ThuG', 'ThuM', 'PluG', 'StrG', 'EleG', 'EleM', 'DilG', 'DilM'];
 initialState.floors[1] = ['PluM', 'StrM'];
 initialState.floors[2] = ['ProG', 'ProM', 'RutG', 'RutM'];
 initialState.floors[3] = [];

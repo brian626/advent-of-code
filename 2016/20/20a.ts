@@ -2,56 +2,83 @@
 import { readFileSync } from 'fs';
 import { exit } from 'process';
 
-const file = readFileSync('./20.test', 'utf-8');
+const file = readFileSync('./20.input', 'utf-8');
 
 const lines = file.split('\n');
 
-const allowedRanges: number[][] = [[0,9]];
+const blockedIPs: number[][] = [];
 
 for (let i = 0; i < lines.length; i++) {
     if (lines[i].length === 0) { continue; }
 
+    // if (i % 25 === 0) { console.log(i); }
+
     const [low, high] = lines[i].split('-').map(x => parseInt(x));
-    console.log(`considering blacklist ${low}-${high}`);
+    console.log(`Considering range ${low}-${high}`);
 
-    for (let i = 0; i < allowedRanges.length; i++) {
-        const r = allowedRanges[i];
-        const lowIsInRange = (low >= r[0]) && (low <= r[1]);
-        const highIsInRange = (high >= r[0]) && (high <= r[1]);
-        console.log(lowIsInRange, highIsInRange);
+    let addNewRange = true;
 
-        // if (low > r[0] && high < r[1]) {
-        if (lowIsInRange && highIsInRange) {
-            // fully enclosed in this range
-            console.log(`case a: removing range ${r[0]}-${r[1]} and adding ranges ${r[0]}-${low-1} and ${high + 1}-${r[1]}`);
-            allowedRanges.splice(i, 1);
-            allowedRanges.push([r[0], low - 1]);
-            allowedRanges.push([high + 1, r[1]]);
-            break;
-        // } else if (lowIsInRange) {
-        //     console.log(`case b: removing range ${r[0]}-${r[1]} and adding ranges ${r[0]}-${low-1} and ${high + 1}-${r[1]}`);
-        //     allowedRanges.splice(i, 1);
-        //     allowedRanges.push([r[0], low - 1]);
-        //     break;
+    for (let j = 0; j < blockedIPs.length; j++) {
+        const [blockedLow, blockedHigh] = blockedIPs[j];
+
+        // Case 1: New range has no overlap
+        if ((low < blockedLow && high < blockedLow) ||
+            (low > blockedHigh && high > blockedHigh)) {
+            // console.log(`  No overlap with ${blockedLow}-${blockedHigh}`)
+            continue;
         }
 
-        // } else if (low === r[0] && high < r[1]) {
-        //     allowedRanges.splice(i, 1);
-        //     const rangeMin = Math.max(r[0], high + 1);
-        //     const rangeMax = Math.max(r[1], high + 1);
-        //     console.log(`case b: removing range ${r[0]}-${r[1]} and adding range ${rangeMin}-${rangeMax}`);
-        //     allowedRanges.push([rangeMin, rangeMax]);
-        //     break;
-        // } else if (low === r[1] && high === r[1]) {
-        //     allowedRanges.splice(i, 1);
-        //     const rangeMin = Math.max(r[0], low - 1);
-        //     const rangeMax = Math.min(r[1], high + 1);
-        //     console.log(`case c: removing range ${r[0]}-${r[1]} and adding range ${rangeMin}-${rangeMax}`);
-        //     allowedRanges.push([rangeMin, rangeMax]);
-        //     break;
-        // }
+        // Case 2: New range overlaps entirely
+        if (low >= blockedLow && high <= blockedHigh) {
+            console.log(`  Overlaps entirely with ${blockedLow}-${blockedHigh} - disregard`);
+            addNewRange = false;
+            break;
+        }
+
+        // Case 3: New range overlaps low end of this range
+        if (low < blockedLow && high > blockedLow && high <= blockedHigh) {
+            console.log(`  Overlaps low end of ${blockedLow}-${blockedHigh}, extend existing range`);
+            blockedIPs[j][0] = low;
+            addNewRange = false;
+            break;
+        }
+
+        // Case 4: New range overlaps high end of this range
+        if (low <= blockedHigh && high > blockedHigh) {
+            console.log(`  Overlaps high end of ${blockedLow}-${blockedHigh}, extend existing range`);
+            blockedIPs[j][1] = high;
+            addNewRange = false;
+            break;
+        }
     }
+
+    if (addNewRange) {
+        console.log(`  Adding new range ${low}-${high}`);
+        blockedIPs.push([low, high]);
+    }
+
+    blockedIPs.sort((a, b) => a[0] - b[0]);
 }
 
-allowedRanges.sort((a, b) => a[0] - b[0]);
-console.log(allowedRanges);
+console.log();
+console.log(blockedIPs);
+console.log();
+
+let unBlockedIP = 0;
+for (let j = 0; j < blockedIPs.length; j++) {
+    const [low, high] = blockedIPs[j];
+
+    while (true) {
+        if (unBlockedIP < low) {
+            console.log(`first unblocked IP is ${unBlockedIP} because ${unBlockedIP} < ${low}`);
+            exit();
+        } else if (unBlockedIP > high) {
+            // console.log(`range doesn't apply`);
+            break;
+        } else {
+            // console.log(`${unBlockedIP} is blocked`);
+        }
+
+        unBlockedIP++;
+    }
+}
