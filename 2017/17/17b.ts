@@ -14,53 +14,23 @@ for (let i = 0; i < lines.length; i++) {
     steps = parseInt(lines[i]);
 }
 
-class Node {
-    val: number;
-    next: Node;
+let currentPos = 0;
+let valueAfter0 = -1
 
-    constructor(v: number) { this.val = v; this.next = null; }
-}
 
-const rootNode = new Node(0);
-rootNode.next = rootNode;
-let bufferLength = 1;
-let currentNode = rootNode;
-
-for (let i = 1; i <= 50000000; i++) {
-    if (i % 10000 === 0) { console.log(i); }
-    // printBuffer();
-
-    // Step forward
-    for (let j = 0; j < steps; j++) {
-        currentNode = currentNode.next;
+for (let i = 1; i <= 50_000_000; i++) {
+    if (i % 250000 === 0) {
+        console.log(`after ${i} iterations, the value after 0 is ${valueAfter0}`);
     }
 
-    // Insert
-    const n = new Node(i);
-    n.next = currentNode.next;
-    currentNode.next = n;
-    bufferLength += 1;
+    // Step forward
+    currentPos = (currentPos + steps) % i + 1;
 
-    // Update current position
-    currentNode = n;
+    if (currentPos === 1) {
+        valueAfter0 = i;
+    }
 }
 
-let x = rootNode;
-while (x.val !== 2017) { x = x.next; if (x === rootNode) { break; } }
-console.log(x.next.val);
+console.log(`the value after 0 is ${valueAfter0}`);
 
-
-function printBuffer(): void {
-    let s = '';
-    let p = rootNode;
-    do {
-        if (p === currentNode) { s += `(${p.val}) `}
-        else { s += `${p.val} `; }
-        p = p.next;
-    } while (p !== rootNode);
-    // for (let i = 0; i < bufferLength; i++) {
-    //     if (i === currentPos) { s += `(${buffer[i]}) `; }
-    //     else { s += `${buffer[i]} `; }
-    // }
-    console.log(s);
-}
+// 15977985 is too low
