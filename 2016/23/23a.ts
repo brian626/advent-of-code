@@ -19,7 +19,7 @@ const file = readFileSync('./23.input', 'utf-8');
 const lines = file.split('\n');
 
 const registers: Map<string, number> = new Map<string, number>();
-registers.set('a', 7);
+registers.set('a', 9);
 registers.set('b', 0);
 registers.set('c', 0);
 registers.set('d', 0);
@@ -45,18 +45,21 @@ for (let i = 0; i < lines.length; i++) {
 
 let x = 0;
 
-let safety = 100000;
+let safety = 10000000;
 while (x < instructions.length) {
     safety--;
     if (safety === 0) { console.log(`SAFETY`); break; }
 
     const i = instructions[x];
-    console.log(i.op, i.input1, i.input2 === undefined ? '' : i.input2);
+    // console.log(i.op, i.input1, i.input2 === undefined ? '' : i.input2);
 
     switch (i.op) {
         case 'cpy':
-            if (typeof (i.input2) !== 'string') { console.log(`  invalid instruction!`); break; }
-            if (typeof (i.input1) === 'string') {
+            if (typeof (i.input2) !== 'string') {
+                console.log(`  invalid instruction!`);
+                break;
+            }
+            else if (typeof (i.input1) === 'string') {
                 registers.set(i.input2 as string, registers.get(i.input1));
             } else {
                 registers.set(i.input2 as string, i.input1);
@@ -75,25 +78,21 @@ while (x < instructions.length) {
             if (typeof (i.input1) === 'string') {
                 if (registers.get(i.input1) !== 0) {
                     if (typeof(i.input2) === 'string') {
-                        console.log(`74`);
                         x += registers.get(i.input2) - 1;
                     } else {
-                        console.log(`77`);
                         x += i.input2 - 1;
                     }
                 }
             } else {
                 if (i.input1 !== 0) {
                     if (typeof(i.input2) === 'string') {
-                        console.log(`84`);
                         x += registers.get(i.input2) - 1;
                     } else {
-                        console.log(`87`);
                         x += i.input2 - 1;
                     }
                 }
             }
-            console.log(`  jumped to ${x + 1}`);
+            // console.log(`  jumped to ${x + 1}`);
             break;
 
         case 'tgl':
@@ -116,11 +115,13 @@ while (x < instructions.length) {
             break;
     }
 
-    console.log(registers);
+    // console.log(registers);
     // console.log(instructions)
-    console.log();
+    // console.log();
 
     x++;
 }
 
 console.log(registers.get('a'));
+
+// formula is a! + 84*80

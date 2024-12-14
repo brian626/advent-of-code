@@ -28,39 +28,54 @@ const file = readFileSync('./22.input', 'utf-8');
 
 const lines = file.split('\n');
 
-const nodes: Node[] = [];
+const nodes: Node[][] = [];
+
+let maxXValue = 0;
+let maxYValue = 0;
+let openXValue = 0;
+let openYValue = 0;
 
 for (let i = 0; i < lines.length; i++) {
     if (lines[i].length === 0) { continue; }
 
     if (lines[i].startsWith('/dev')) {
         const [f, s, u, a, p] = lines[i].replace(/\s+/g, ' ').split(' ');
-        nodes.push(new Node(f, parseInt(s.slice(0, -1)), parseInt(u.slice(0, -1)), parseInt(a.slice(0, -1)), parseInt(p.slice(0, -1))));
+        const node = new Node(f, parseInt(s.slice(0, -1)), parseInt(u.slice(0, -1)), parseInt(a.slice(0, -1)), parseInt(p.slice(0, -1)));
+        if (!nodes[node.yPos]) {
+            nodes[node.yPos] = [];
+        }
+        nodes[node.yPos][node.xPos] = node;
+        maxXValue = Math.max(maxXValue, node.xPos);
+        maxYValue = Math.max(maxYValue, node.yPos);
+
+        if (node.usePercentage === 0) {
+            openXValue = node.xPos;
+            openYValue = node.yPos;
+        }
     }
 }
 
 // console.log(nodes);
 
-// let count = 0;
-const viablePairs: Set<string> = new Set<string>();
+const goalNode = nodes[0][maxXValue];
+const openNode = nodes[openYValue][openXValue];
 
-for (let i = 0; i < nodes.length; i++) {
-    for (let j = 0; j < nodes.length; j++) {
-        if (nodes[i].filesystem === nodes[j].filesystem) { continue; }
-        if (isViablePair(nodes[i], nodes[j])) {
-            console.log(`pair ${nodes[i].filesystem},${nodes[j].filesystem} is viable because node A has used of ${nodes[i].used}T which would fit on node B's avail ${nodes[j].available}T`);
-            viablePairs.add(`${nodes[i].filesystem},${nodes[j].filesystem}`);
-        } else {
-            // console.log(`pair ${nodes[i].filesystem},${nodes[j].filesystem} is NOT viable because node A has used of ${nodes[i].used}T which would NOT fit on node B's avail ${nodes[j].available}T`);
+printNodes();
+
+
+function printNodes() {
+    for (let y = 0; y < nodes.length; y++) {
+        let row = '';
+
+        for (let x = 0; x < nodes[0].length; x++) {
+            if (y === goalNode.yPos && x === goalNode.xPos) { row += 'G'; }
+            else if (y === openNode.yPos && x === openNode.xPos) { row += '_'; }
+            else if (nodes[y][x].size > 500) { row += '#'; }
+            else { row += '.'; }
         }
+
+        console.log(row);
     }
-}
 
-// console.log(count);
-console.log(Array.from(viablePairs.values())[0]);
-console.log(viablePairs.size);
-
-
-function isViablePair(a: Node, b: Node): boolean {
-    return a.used !== 0 && b.available >= a.used;
+    console.log();
 }
