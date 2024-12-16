@@ -117,6 +117,10 @@ class Bridge {
         }
         return strength;
     }
+
+    getLength(): number {
+        return this.components.length;
+    }
 }
 
 const bridges: Bridge[] = [];
@@ -129,7 +133,7 @@ for (const c of components) {
     }
 }
 
-console.log(bridges.map(x => x.toString()));
+// console.log(bridges.map(x => x.toString()));
 
 const completedBridges: Bridge[] = [];
 
@@ -140,7 +144,7 @@ while (bridges.length > 0) {
 
     const b = bridges.shift();
     // console.log(`Considering bridge ${b.toString()} (${bridges.length} in progress, ${completedBridges.length} completed)`);
-    if (iterations % 10000 === 0) {
+    if (iterations % 5000 === 0) {
         console.log(`${bridges.length} in progress, ${completedBridges.length} completed`);
     }
 
@@ -166,10 +170,15 @@ while (bridges.length > 0) {
 
 // console.log(completedBridges.map(x => x.toString()));
 
-let maxStrength = 0;
+let maxLength = 0;
 for (const b of completedBridges) {
-    maxStrength = Math.max(b.getStrength(), maxStrength);
+    maxLength = Math.max(b.getLength(), maxLength);
 }
-console.log(maxStrength);
+// console.log(maxLength);
 
-// 140 is too low
+const longestBridges: Bridge[] = completedBridges.filter(x => x.getLength() === maxLength);
+console.log(longestBridges.map(x => x.toString()));
+console.log(Math.max(...longestBridges.map(x => x.getStrength())));
+// for (const b of longestBridges) {
+//     console.log(b.getStrength());
+// }
