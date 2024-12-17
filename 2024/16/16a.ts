@@ -1,8 +1,7 @@
 
 import { readFileSync } from 'fs';
 import { exit } from 'process';
-import { AStar, AStarNode, Manhattan } from '../../common/astar-algorithm';
-
+import { findAllPaths } from '../../common/findAllPaths';
 
 const file = readFileSync('./16.input', 'utf-8');
 
@@ -28,89 +27,42 @@ for (let r = 0; r < map.length; r++) {
     }
 }
 
-const astar = new AStar();
-
+const maze: number[][] = [];
 for (let r = 0; r < map.length; r++) {
+    maze[r] = [];
+
     for (let c = 0; c < map[0].length; c++) {
-        if (map[r][c] === '#') { continue; }
-
-        let neighbors = [];
-        if (r > 0 && map[r - 1][c] !== '#') { neighbors.push({ nameOfVertex: `${r - 1},${c}`, weight: 1 }); }
-        if (r < map.length - 1 && map[r + 1][c] !== '#') { neighbors.push({ nameOfVertex: `${r + 1},${c}`, weight: 1 }); }
-        if (c > 0 && map[r][c - 1] !== '#') { neighbors.push({ nameOfVertex: `${r},${c - 1}`, weight: 1 }); }
-        if (c < map[0].length - 1 && map[r][c + 1] !== '#') { neighbors.push({ nameOfVertex: `${r},${c + 1}`, weight: 1 }); }
-
-        astar.addNode(new AStarNode(`${r},${c}`, r, c, neighbors));
-    }
-}
-
-// for (const [k,v] of astar.nodes) {
-//     console.log(v.name);
-//     console.log(v.neighbors);
-//     console.log();
-// }
-
-
-let shortestPath: AStarNode[] = astar.findPath(astar.findNode(`${rStart},${cStart}`), astar.findNode(`${rEnd},${cEnd}`), Manhattan);
-// console.log(`shortest path: ${shortestPath.map(x => x.name).join(' -> ')}`);
-let minCost = calculateScore(shortestPath);
-console.log(`shortest path has a cost of ${minCost}`);
-// console.log();
-
-// for (const [name, node] of astar.nodes) {
-//     for (let i = 0; i < node.neighbors.length; i++) {
-//         const removedNeighbor = node.neighbors.shift();
-
-//         const nextShortestPath: AStarNode[] = astar.findPath(astar.findNode(`${rStart},${cStart}`), astar.findNode(`${rEnd},${cEnd}`), Manhattan);
-//         const score = calculateScore(nextShortestPath);
-//         if (score > 0) {
-//             minCost = Math.min(minCost, score);
-//             console.log(`removed ${name}: next shortest path has a cost of ${score}`);
-//         }
-
-//         node.neighbors.push(removedNeighbor);
-//     }
-// }
-for (let i = 1; i < shortestPath.length - 1; i++) {
-    const path1 = shortestPath[i].name;
-    const path2 = shortestPath[i+1].name;
-
-    const node1 = astar.findNode(path1);
-    // console.log(`remove ${path2} from ${neighbors.map(x => x.nameOfVertex)}`);
-
-    let indexOfPath2 = -1;
-    for (let j = 0; j < node1.neighbors.length; j++) {
-        if (node1.neighbors[j].nameOfVertex === path2) {
-            indexOfPath2 = j;
-            break;
+        if (map[r][c] === '#') {
+            maze[r][c] = 1;
+        } else {
+            maze[r][c] = 0;
         }
     }
-    const removedNeighbor = node1.neighbors.splice(indexOfPath2, 1)[0];
-
-    const nextShortestPath: AStarNode[] = astar.findPath(astar.findNode(`${rStart},${cStart}`), astar.findNode(`${rEnd},${cEnd}`), Manhattan);
-    // console.log(`next shortest path: ${nextShortestPath.map(x => x.name).join(' -> ')}`);
-    const score = calculateScore(nextShortestPath);
-    if (score > 0) {
-        minCost = Math.min(minCost, score);
-        console.log(`next shortest path has a cost of ${score}`);
-        // console.log();
-    }
-
-    node1.neighbors.push(removedNeighbor);
 }
 
+const start = [rStart, cStart];
+const end = [rEnd, cEnd];
 
-console.log(minCost);
+const allPaths = findAllPaths(maze, start, end);
+console.log(allPaths.length);
+
+let minScore = Infinity;
+for (const p of allPaths) {
+    minScore = Math.min(minScore, calculateScore(p));
+}
+
+console.log(minScore);
 
 
-function calculateScore(path: AStarNode[]): number {
+function calculateScore(path: number[][]): number {
     let facing = 1;
     let cost = 0;
     let rCurrent = rStart, cCurrent = cStart;
     for (let i = 0; i < path.length; i++) {
         const node = path[i];
-        if (!node || !node.name) { continue; }
-        let [rNode, cNode] = node.name.split(',').map(x => parseInt(x));
+        if (!node) { continue; }
+        let [rNode, cNode] = [node[0], node[1]];
+        if (rNode === rStart && cNode === cStart) { continue; }
 
         // console.log(`current node is [${rCurrent},${cCurrent}] and facing is ${facing}. heading to [${rNode},${cNode}]`);
         switch (facing) {
@@ -169,5 +121,3 @@ function calculateScore(path: AStarNode[]): number {
 
     return cost;
 }
-
-// 78392 is too high
