@@ -1,13 +1,14 @@
 export { findAllPaths }
 
-function findAllPaths(maze: number[][], start: number[], end: number[]): number[][][] {
+function findAllPaths(maze: number[][], start: number[], end: number[], scoreFn: (path: number[][]) => number = null, maxScore = Infinity): number[][][] {
     const paths: number[][][] = [];
     const visited = {};
 
+    let iterations = 0;
+
     function dfs(x: number, y: number, path: number[][]): number[][][] {
         // Check if out of bounds or visited
-        if (x < 0 || x >= maze.length || y < 0 || y >= maze[0].length ||
-            maze[x][y] === 1 || visited[x + ',' + y]) {
+        if (x < 0 || x >= maze.length || y < 0 || y >= maze[0].length || maze[x][y] === 1 || visited[x + ',' + y]) {
             return;
         }
 
@@ -15,23 +16,28 @@ function findAllPaths(maze: number[][], start: number[], end: number[]): number[
         visited[x + ',' + y] = true;
         path.push([x, y]);
 
-        // Check if reached the end
-        if (x === end[0] && y === end[1]) {
-            paths.push([...path]);
-        } else {
-            // Explore all possible directions
-            dfs(x + 1, y, path);
-            dfs(x - 1, y, path);
-            dfs(x, y + 1, path);
-            dfs(x, y - 1, path);
+        if (!scoreFn || (scoreFn && scoreFn(path) <= maxScore)) {
+            // Check if reached the end
+            if (x === end[0] && y === end[1]) {
+                paths.push([...path]);
+            } else {
+                // Explore all possible directions
+                dfs(x + 1, y, path);
+                dfs(x - 1, y, path);
+                dfs(x, y + 1, path);
+                dfs(x, y - 1, path);
+            }
         }
 
         // Backtrack
         path.pop();
         visited[x + ',' + y] = false;
+        iterations++;
+        if (iterations % 100000 === 0) { console.log(iterations, paths.length); }
     }
 
     dfs(start[0], start[1], []);
+    console.log(`total iterations: ${iterations}`);
     return paths;
 }
 

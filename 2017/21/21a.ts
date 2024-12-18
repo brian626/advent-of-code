@@ -2,7 +2,7 @@
 import { readFileSync } from 'fs';
 import { exit } from 'process';
 
-const file = readFileSync('./21.test', 'utf-8');
+const file = readFileSync('./21.input', 'utf-8');
 
 const lines = file.split('\n');
 
@@ -11,7 +11,8 @@ const rules: Map<string, string> = new Map<string, string>();
 for (let i = 0; i < lines.length; i++) {
     if (lines[i].length === 0) { continue; }
 
-    let [input, output] = lines[i].split(' => ').map(x => x.replace(/\//g, ''));
+    let [input, output] = lines[i].split(' => ');
+    input = input.replace(/\//g, '');
     rules.set(input, output);
     rules.set(rotate(input), output);
     rules.set(rotate(rotate(input)), output);
@@ -22,7 +23,7 @@ for (let i = 0; i < lines.length; i++) {
     rules.set(flipHoriz(rotate(input)), output);
 }
 
-console.log(rules);
+// console.log(rules);
 
 
 let grid: string[][] = [
@@ -32,23 +33,81 @@ let grid: string[][] = [
 ];
 
 
-const ITERATIONS = 1;
+console.log(`Initial state`);
+console.log(grid);
+console.log();
+
+const ITERATIONS = 4;
 for (let i = 0; i < ITERATIONS; i++) {
+    console.log(`Iteration ${i + 1}`);
+
     const subsquares = divide(grid);
-    const newGrid: string[][] = [];
+    console.log(`  Divided grid into ${subsquares.length} subsquares`);
+
+    const newSubsquares: string[] = [];
 
     for (const ss of subsquares) {
-        console.log(`converting ${matrixToString(ss)}`);
-        console.log(`to ${rules.get(matrixToString(ss))}`);
-
         const output = rules.get(matrixToString(ss));
-        console.log(stringToMatrix(output));
+        console.log(`  Converting ${matrixToString(ss)} to ${output}`);
+
+        // console.log(stringToMatrix(output));
+        newSubsquares.push(output);
     }
 
-    grid = newGrid;
+    // join subsquares back into a single grid
+    if (newSubsquares.length === 1) {
+        grid = newSubsquares[0].split('/').map(x => x.split(''));
+    } else if (newSubsquares.length === 4) {
+        grid[0] = (newSubsquares[0].split('/')[0] + newSubsquares[1].split('/')[0]).split('');
+        grid[1] = (newSubsquares[0].split('/')[1] + newSubsquares[1].split('/')[1]).split('');
+        grid[2] = (newSubsquares[0].split('/')[2] + newSubsquares[1].split('/')[2]).split('');
+        grid[3] = (newSubsquares[2].split('/')[0] + newSubsquares[3].split('/')[0]).split('');
+        grid[4] = (newSubsquares[2].split('/')[1] + newSubsquares[3].split('/')[1]).split('');
+        grid[5] = (newSubsquares[2].split('/')[2] + newSubsquares[3].split('/')[2]).split('');
+    } else if (newSubsquares.length === 9) {
+        const rowLen = newSubsquares[0].split('/')[0].length;
+        for (let j = 0; j < newSubsquares.length; j++) {
+            grid[j] = (newSubsquares[j].split('/')[0] + newSubsquares[j].split('/')[1] + newSubsquares[j].split('/')[2]).split('');
+            console.log(grid[j]);
+        }
+        // grid[0] = (newSubsquares[0].split('/')[0] + newSubsquares[1].split('/')[0] + newSubsquares[2].split('/')[0]).split('');
+        // grid[1] = (newSubsquares[0].split('/')[1] + newSubsquares[1].split('/')[1] + newSubsquares[2].split('/')[1]).split('');
+        // grid[2] = (newSubsquares[0].split('/')[2] + newSubsquares[1].split('/')[2] + newSubsquares[2].split('/')[2]).split('');
+        // grid[3] = (newSubsquares[3].split('/')[0] + newSubsquares[4].split('/')[0] + newSubsquares[5].split('/')[0]).split('');
+        // grid[4] = (newSubsquares[3].split('/')[1] + newSubsquares[4].split('/')[1] + newSubsquares[5].split('/')[1]).split('');
+        // grid[5] = (newSubsquares[3].split('/')[2] + newSubsquares[4].split('/')[2] + newSubsquares[5].split('/')[2]).split('');
+        // grid[6] = (newSubsquares[6].split('/')[0] + newSubsquares[7].split('/')[0] + newSubsquares[8].split('/')[0]).split('');
+        // grid[7] = (newSubsquares[6].split('/')[1] + newSubsquares[7].split('/')[1] + newSubsquares[8].split('/')[1]).split('');
+        // grid[8] = (newSubsquares[6].split('/')[2] + newSubsquares[7].split('/')[2] + newSubsquares[8].split('/')[2]).split('');
+    }
+
+    // console.log();
+    // console.log(grid);
+    // console.log(countOnPixels(grid));
+    // console.log();
+
+    console.log();
+    printPattern(matrixToString(grid));
+    console.log(countOnPixels(grid));
+    console.log();
 }
 
-console.log(grid);
+// printPattern(matrixToString(grid));
+console.log(countOnPixels(grid));
+
+
+function countOnPixels(g: string[][]): number {
+    const size = g.length;
+
+    let count = 0;
+    for (let r = 0; r < size; r++) {
+        for (let c = 0; c < size; c++) {
+            if (g[r][c] === '#') { count++; }
+        }
+    }
+
+    return count;
+}
 
 // Turns abcd into ab cd or abcdef into abc def
 //       efgh      ef gh    ghijkl      ghi jkl
@@ -58,6 +117,7 @@ console.log(grid);
 //                          567890      yz1 234
 //                                      567 890
 function divide(grid: string[][]): string[][][] {
+    // console.log(`divide(${grid}), length = ${grid.length}`);
     if (grid.length === 3 || grid.length === 2) {
         return [grid];
     }

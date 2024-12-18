@@ -43,8 +43,9 @@ for (let r = 0; r < map.length; r++) {
 const start = [rStart, cStart];
 const end = [rEnd, cEnd];
 
-const allPaths = findAllPaths(maze, start, end);
-console.log(allPaths.length);
+let a = calculateScore;
+const allPaths = findAllPaths(maze, start, end, calculateScore, 61000);
+// console.log(allPaths.length);
 
 let minScore = Infinity;
 for (const p of allPaths) {
@@ -56,7 +57,7 @@ console.log(minScore);
 
 function calculateScore(path: number[][]): number {
     let facing = 1;
-    let cost = 0;
+    let score = 0;
     let rCurrent = rStart, cCurrent = cStart;
     for (let i = 0; i < path.length; i++) {
         const node = path[i];
@@ -68,48 +69,48 @@ function calculateScore(path: number[][]): number {
         switch (facing) {
             case 0:
                 if (rNode === rCurrent - 1 && cNode === cCurrent) {
-                    cost += 1;
+                    score += 1;
                 } else if (rNode === rCurrent && cNode === cCurrent - 1) {
-                    cost += 1001;
+                    score += 1001;
                     facing = 3;
                 } else if (rNode === rCurrent && cNode === cCurrent + 1) {
-                    cost += 1001;
+                    score += 1001;
                     facing = 1;
                 }
                 break;
 
             case 1:
                 if (rNode === rCurrent && cNode === cCurrent + 1) {
-                    cost += 1;
+                    score += 1;
                 } else if (rNode === rCurrent - 1 && cNode === cCurrent) {
-                    cost += 1001;
+                    score += 1001;
                     facing = 0;
                 } else if (rNode === rCurrent + 1 && cNode === cCurrent) {
-                    cost += 1001;
+                    score += 1001;
                     facing = 2;
                 }
                 break;
 
             case 2:
                 if (rNode === rCurrent + 1 && cNode === cCurrent) {
-                    cost += 1;
+                    score += 1;
                 } else if (rNode === rCurrent && cNode === cCurrent - 1) {
-                    cost += 1001;
+                    score += 1001;
                     facing = 3;
                 } else if (rNode === rCurrent && cNode === cCurrent + 1) {
-                    cost += 1001;
+                    score += 1001;
                     facing = 1;
                 }
                 break;
 
             case 3:
                 if (rNode === rCurrent && cNode === cCurrent - 1) {
-                    cost += 1;
+                    score += 1;
                 } else if (rNode === rCurrent - 1 && cNode === cCurrent) {
-                    cost += 1001;
+                    score += 1001;
                     facing = 0;
                 } else if (rNode === rCurrent + 1 && cNode === cCurrent) {
-                    cost += 1001;
+                    score += 1001;
                     facing = 2;
                 }
                 break;
@@ -119,5 +120,6 @@ function calculateScore(path: number[][]): number {
         cCurrent = cNode;
     }
 
-    return cost;
+    // console.log(`score for path of length ${path.length} is ${score}`);
+    return score;
 }
