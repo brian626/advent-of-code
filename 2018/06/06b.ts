@@ -79,45 +79,37 @@ for (let y = 0; y <= gridSize; y++) {
     }
 }
 
-console.log();
-printGrid();
+// console.log();
+// printGrid();
 
+const THRESHOLD = 10000;
 
-let maxArea = 0;
-let maxCoord = '';
-for (const c of coordinates) {
-    if (getArea(c) > maxArea) { maxCoord = c.name; }
-    maxArea = Math.max(maxArea, getArea(c));
-}
-console.log(maxArea);
-console.log(maxCoord);
+for (let y = 0; y <= gridSize; y++) {
+    for (let x = 0; x <= gridSize; x++) {
+        let distanceSum = 0;
+        let inRegion = true;
 
-
-function getArea(c: Coordinate): number {
-    const label = c.name.toLowerCase();
-    let isInfinite = false;
-    let area = 0;
-
-    for (let y = 0; y <= gridSize; y++) {
-        if (isInfinite) {
-            break;
-        }
-
-        for (let x = 0; x <= gridSize; x++) {
-            if (grid[y][x].toLowerCase() === label) {
-                if (x === 0 || y === 0 || x === gridSize || y === gridSize) {
-                    isInfinite = true;
-                    break;
-                }
-
-                area++;
+        for (const c of coordinates) {
+            distanceSum += manhattan(x, y, c);
+            if (distanceSum >= THRESHOLD) {
+                inRegion = false;
+                break;
             }
         }
-    }
 
-    // console.log(`area of ${c.name} is ${isInfinite ? -1 : area}`);
-    return isInfinite ? -1 : area;
+        if (inRegion) { // && grid[y][x] === '.') {
+            grid[y][x] = '#'
+        }
+    }
 }
+
+let count = 0;
+for (let y = 0; y <= gridSize; y++) {
+    for (let x = 0; x <= gridSize; x++) {
+        if (grid[y][x] === '#') { count++; }
+    }
+}
+console.log(count);
 
 
 function manhattan(x: number, y: number, c: Coordinate): number {
@@ -132,5 +124,3 @@ function printGrid() {
 
     console.log();
 }
-
-// 4557 is too high
