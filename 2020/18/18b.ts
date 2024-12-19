@@ -106,7 +106,7 @@ function convertToPostfix(Q: string[]): string[] {
             if (stack.length === 0 || stack[0] === '(') {
                 stack.unshift(term);
             } else {
-                while (stack.length > 0 && stack[0] !== '(') {
+                while (stack.length > 0 && stack[0] !== '(' && getPrecedence(term) <= getPrecedence(stack[0])) {
                     P.push(stack.shift());
                 }
 
@@ -157,4 +157,10 @@ function evaluate(P: string[]): number {
     const result = parseInt(stack.pop());
 
     return result;
+}
+
+
+function getPrecedence(operator: string): number {
+    if (operator === '+') { return 1; }
+    else if (operator === '*') { return 0; }
 }
