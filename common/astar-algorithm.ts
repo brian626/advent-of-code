@@ -2,7 +2,7 @@ import { MapWithDefault, DEFAULT } from './mapWithDefault';
 
 export { AStar, AStarNode, Manhattan }
 
-// let astar = new AStar();
+// const astar = new AStar();
 
 // astar.addNode(new AStarNode('A', 0, 0, [{nameOfVertex: 'B', weight: 1}, {nameOfVertex: 'C', weight: 5}]));
 // astar.addNode(new AStarNode('B', 2, 0, [{nameOfVertex: 'A', weight: 1}, {nameOfVertex: 'D', weight: 7}]));
@@ -10,7 +10,7 @@ export { AStar, AStarNode, Manhattan }
 // astar.addNode(new AStarNode('D', 2, 3, [{nameOfVertex: 'B', weight: 7}, {nameOfVertex: 'E', weight: 10}]));
 // astar.addNode(new AStarNode('E', 1, 4, [{nameOfVertex: 'C', weight: 8}, {nameOfVertex: 'D', weight: 10}]));
 
-// let shortestPath: AStarNode[] = astar.findPath(astar.findNode('A'), astar.findNode('E'), Manhattan);
+// const shortestPath: AStarNode[] = astar.findPath(astar.findNode('A'), astar.findNode('E'), Manhattan);
 // console.log(`shortest path: ${shortestPath.map(x => x.name)}`);
 // console.log(`shortest path has weight ${shortestPath.slice(-1)[0]}`);
 
