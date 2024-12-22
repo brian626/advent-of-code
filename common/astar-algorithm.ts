@@ -2,6 +2,8 @@ import { MapWithDefault, DEFAULT } from './mapWithDefault';
 
 export { AStar, AStarNode, Manhattan }
 
+// import { AStar, AStarNode, Manhattan } from '../../common/astar-algorithm';
+
 // const astar = new AStar();
 
 // astar.addNode(new AStarNode('A', 0, 0, [{nameOfVertex: 'B', weight: 1}, {nameOfVertex: 'C', weight: 5}]));

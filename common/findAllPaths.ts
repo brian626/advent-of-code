@@ -37,7 +37,7 @@ function findAllPaths(maze: number[][], start: number[], end: number[], scoreFn:
     }
 
     dfs(start[0], start[1], []);
-    console.log(`total iterations: ${iterations}`);
+    // console.log(`total iterations: ${iterations}`);
     return paths;
 }
 
