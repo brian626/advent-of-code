@@ -48,8 +48,8 @@ for (let i = 0; i < lines.length; i++) {
     let shortestSequence = '';
     for (const r1 of robot1) {
         shortestSequence = r1;
-        for (let j = 0; j < 25; j++) {
-            console.log(j, shortestSequence.length);
+        for (let j = 0; j < 0; j++) {
+            // console.log(j, shortestSequence.length);
             shortestSequence = sequenceToSequence(shortestSequence);
         }
         if (shortestSequence.length < shortestLen) {
@@ -59,6 +59,7 @@ for (let i = 0; i < lines.length; i++) {
 
     console.log(shortestLen, parseInt(code.slice(0, -1)));
     complexity += (shortestLen * parseInt(code.slice(0, -1)));
+    break;
 }
 
 console.log(complexity);
