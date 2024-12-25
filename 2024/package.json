@@ -1,5 +1,9 @@
 {
   "devDependencies": {
     "@types/node": "^16.11.11"
+  },
+  "dependencies": {
+    "@dagrejs/graphlib": "^2.2.4",
+    "k-shortest-path": "^0.0.5"
   }
 }
