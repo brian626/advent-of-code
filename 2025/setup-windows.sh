@@ -3,4 +3,5 @@ mkdir $1
 cat template.py | sed "s/DAY/$1/" > $1/"$1"a.py
 touch $1/$1.test
 # wget https://adventofcode.com/2023/day/$1/input -o $1.input
-mv ~/Downloads/input $1/$1.input
+# mv ~/Downloads/input $1/$1.input
+mv /mnt/c/Users/brian/Downloads/input.txt $1/$1.input
