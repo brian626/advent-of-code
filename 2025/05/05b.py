@@ -41,25 +41,54 @@ def remove_overlaps(r: tuple[int, int]):
     for rr in fresh_ranges:
         if r == rr:
             continue
+
         if r[0] >= rr[0] and r[0] <= rr[1]:
             combined_range = (min(r[0], rr[0]), max(r[1], rr[1]))
-            print(combined_range)
-        # if r[1] >= rr[0] and r[1] <= rr[1]:
+            print(f'a: result of combining range {r} and range {rr} is {combined_range}')
+            fresh_ranges.remove(r)
+            fresh_ranges.remove(rr)
+            fresh_ranges.append(combined_range)
+            break
+        elif r[1] >= rr[0] and r[1] <= rr[1]:
+            combined_range = (min(r[0], rr[0]), max(r[1], rr[1]))
+            print(f'b: result of combining range {r} and range {rr} is {combined_range}')
+            fresh_ranges.remove(r)
+            fresh_ranges.remove(rr)
+            fresh_ranges.append(combined_range)
+            break
 
 
+found_overlap = True
+
+while found_overlap:
+    found_overlap = False
+    fresh_ranges.sort()
+
+    for idx, r in enumerate(fresh_ranges):
+        if not overlaps(r):
+            print(f'range {r} does not overlap, contains {r[1] - r[0] + 1} fresh ingredients')
+            print('ranges are')
+            print(fresh_ranges)
+            print()
+        else:
+            found_overlap = True
+            print(f'range {r} overlaps')
+            remove_overlaps(r)
+            print('new ranges are')
+            print(fresh_ranges)
+            print()
+            break
+
+print('final ranges are')
+print(fresh_ranges)
 
 num_fresh = 0
 
-for idx, r in enumerate(fresh_ranges):
-    if not overlaps(r):
-        print(f'range {r} does not overlap, contains {r[1] - r[0] + 1} fresh ingredients')
-        num_fresh += (r[1] - r[0] + 1)
-    else:
-        print(f'range {r} overlaps')
-        remove_overlaps(r)
-        print('new ranges are')
-        print(fresh_ranges)
-        num_fresh += (r[1] - r[0] + 1)
-    print()
+for r in fresh_ranges:
+    num_fresh += (r[1] - r[0] + 1)
 
 print(num_fresh)
+
+
+# 387045651434109 is too high
+# 376778472308100 is too high
