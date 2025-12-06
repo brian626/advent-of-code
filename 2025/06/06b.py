@@ -3,47 +3,47 @@ from functools import reduce
 
 lines = []
 
-with open('06.test', 'r') as f:
+with open('06.input', 'r') as f:
     lines = f.readlines()
 
-lines = [line.strip() for line in lines]
+lines = [line.strip('\n') for line in lines]
 
-operands = [line.split() for line in lines[:-1]]
 operators = lines[-1:][0].split()
+lines = lines[:-1]
 
-# print(operands)
-# print(operators)
+print(lines)
+print(operators)
 
-def transpose(values: list[str]) -> list[int]:
-    new_values: list[int] = []
-
-    matrix = [list(vals) for vals in values]
-    for m in matrix:
-        m.reverse()
-    # print(matrix)
-
-    while len(matrix[0]):
-        new_value = []
-        new_matrix = []
-        for num in matrix:
-            new_value += num[:1]
-            new_matrix.append(num[1:])
-        matrix = new_matrix
-        print(f'appending {new_value}, matrix is now {matrix}')
-        new_values.append(int(''.join(new_value)))
-
-    return new_values
-
-
+operands: list[int] = []
 sum = 0
-for col in range(len(operands[0])):
-    values = [line[col] for line in operands]
-    values = transpose(values)
-    print(values, operators[col])
 
-    # if operators[col] == '*':
-    #     sum += reduce(lambda x, y: x * y, values)
-    # elif operators[col] == '+':
-    #     sum += reduce(lambda x, y: x + y, values)
+for col in range(len(lines[0]) - 1, -1, -1):
+    print(col)
+    num_string = ''
+    for line in lines:
+        if line[col] != ' ':
+            num_string += line[col]
+
+    if num_string or col == -1:
+        print(f'appending {num_string}')
+        operands.append(int(num_string))
+    else:
+        operator = operators.pop()
+        if operator == '*':
+            print('*'.join([str(op) for op in operands]))
+            sum += reduce(lambda x, y: x * y, operands)
+        elif operator == '+':
+            print('+'.join([str(op) for op in operands]))
+            sum += reduce(lambda x, y: x + y, operands)
+        operands.clear()
+
+operator = operators.pop()
+if operator == '*':
+    print('*'.join([str(op) for op in operands]))
+    sum += reduce(lambda x, y: x * y, operands)
+elif operator == '+':
+    print('+'.join([str(op) for op in operands]))
+    sum += reduce(lambda x, y: x + y, operands)
+operands.clear()
 
 print(sum)

@@ -1,7 +1,7 @@
 
 lines = []
 
-with open('05.test', 'r') as f:
+with open('05.input', 'r') as f:
     lines = f.readlines()
 
 lines = [line.strip() for line in lines]
@@ -79,6 +79,7 @@ while found_overlap:
             print()
             break
 
+fresh_ranges = list(set(fresh_ranges))
 print('final ranges are')
 print(fresh_ranges)
 
