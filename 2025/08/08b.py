@@ -60,7 +60,8 @@ distances.sort(key=lambda x: x[2])
 # print()
 
 # need to handle circuit-merging
-for n in range(1000):
+n = 0
+while True:
     distance = distances[n*2]
     junction1 = distance[0]
     circuit1 = [c for c in circuits if junction1 in c.junctions][0]
@@ -72,16 +73,18 @@ for n in range(1000):
         circuits.remove(circuit2)
 
     circuits.sort(key=lambda x: len(x.junctions), reverse=True)
-    # print(f'After {n+1} iterations, there are {len(circuits)} circuits.')
-    num_single_circuits = 0
-    for idx, c in enumerate(circuits):
-        if len(c.junctions) == 1:
-            num_single_circuits += 1
-        # else:
-        #     print(f'\tCircuit #{idx+1} has {len(c.junctions)} junctions: {c}')
-    # if num_single_circuits > 0:
-    #     print(f'\tAnd {num_single_circuits} circuits with a single junction')
-    # print()
+    if len(circuits) == 1:
+        print(junction1.x * junction2.x)
+        break
 
-print([len(c.junctions) for c in circuits[:3]])
-print(reduce(lambda x, y: x * y, [len(c.junctions) for c in circuits[:3]]))
+    n += 1
+    # print(f'After {n+1} iterations, there are {len(circuits)} circuits.')
+    # num_single_circuits = 0
+    # for idx, c in enumerate(circuits):
+    #     if len(c.junctions) == 1:
+    #         num_single_circuits += 1
+    #     # else:
+    #     #     print(f'\tCircuit #{idx+1} has {len(c.junctions)} junctions: {c}')
+    # # if num_single_circuits > 0:
+    # #     print(f'\tAnd {num_single_circuits} circuits with a single junction')
+    # # print()
