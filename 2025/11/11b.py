@@ -19,9 +19,13 @@ for line in lines:
 
 
 graph['out'] = []
-print(graph)
 
 all_paths = []
-find_all_paths_dfs_backtrack(graph, 'you', 'out', all_paths, [])
+find_all_paths_dfs_backtrack(graph, 'svr', 'out', all_paths, [])
 
-print(len(all_paths))
+count = 0
+for path in all_paths:
+    if 'fft' in path and 'dac' in path:
+        count += 1
+
+print(count)
